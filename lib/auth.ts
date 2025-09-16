@@ -1,6 +1,6 @@
 import { AuthResponse, LoginCredentials, User } from "./types"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://quizappbackend-production-37c5.up.railway.app"
 
 // Token management
 export const getToken = (): string | null => {
