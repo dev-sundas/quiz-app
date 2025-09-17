@@ -25,7 +25,7 @@ export const getQuizById = async (id: string): Promise<Quiz> => {
 }
 
 export const getQuizzes = async (): Promise<Quiz[]> => {
-  const res = await apiCall<Quiz[] | null>("/quiz")
+  const res = await apiCall<Quiz[] | null>("/quiz/")
   return res ?? []
 }
 
@@ -169,7 +169,7 @@ export const deleteOption = async (id: string): Promise<void> => {
 
 // -------------------- USERS --------------------
 export const getAllUsers = async (): Promise<User[]> => {
-  const res = await apiCall<User[] | null>("/user")
+  const res = await apiCall<User[] | null>("/user/")
   return res ?? []
 }
 
@@ -221,6 +221,17 @@ export const signupUser = async (user: {
   if (!res) throw new Error("Failed to signup user")
   return res
 }
+
+// Only allow username and email
+export const updateMyProfile = async (user: { username: string; email: string }) => {
+  const res = await apiCall<User | null>(`/user/me/update`, {
+    method: "PUT",
+    body: JSON.stringify(user),
+  })
+  if (!res) throw new Error("Failed to update profile")
+  return res
+}
+
 
 // -------------------- ROLES --------------------
 export const getAllRoles = async (): Promise<Role[]> => {
@@ -350,7 +361,7 @@ export const getQuizAnswers = async (attemptId: string) => {
 
 // -------------------- QUIZ RESULTS --------------------
 export const getQuizResults = async (): Promise<DetailedQuizAttempt[]> => {
-  const res = await apiCall<DetailedQuizAttempt[] | null>("/quiz_result")
+  const res = await apiCall<DetailedQuizAttempt[] | null>("/quiz_result/")
   return res ?? []
 }
 

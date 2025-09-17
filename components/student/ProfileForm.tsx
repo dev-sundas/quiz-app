@@ -8,9 +8,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/auth-context"
 import { User, Mail, Calendar, Shield } from "lucide-react"
+import { updateMyProfile } from "@/lib/api"
 
 export function ProfileForm() {
-  const { user } = useAuth()
+  const { user ,setUser} = useAuth()
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
     name: user?.username || "",
@@ -18,24 +19,26 @@ export function ProfileForm() {
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleSave = async () => {
-    if (!user) return
+const handleSave = async () => {
+  if (!user) return
 
-    setIsLoading(true)
-    try {
-      // In a real app, this would update the user in the backend
-      // For now, we'll just update localStorage
-      const updatedUser = { ...user, ...formData, updatedAt: new Date() }
-      localStorage.setItem("quiz_current_user", JSON.stringify(updatedUser))
+  setIsLoading(true)
+  try {
+    const updatedUser = await updateMyProfile({
+      username: formData.name,
+      email: formData.email,
+    })
 
-      setIsEditing(false)
-      // You might want to refresh the auth context here
-    } catch (error) {
-      console.error("Failed to update profile:", error)
-    } finally {
-      setIsLoading(false)
-    }
+    setUser(updatedUser) // UI updates automatically
+    setIsEditing(false)
+  } catch (error) {
+    console.error("Failed to update profile:", error)
+  } finally {
+    setIsLoading(false)
   }
+}
+
+
 
   const handleCancel = () => {
     setFormData({

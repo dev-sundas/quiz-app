@@ -27,9 +27,9 @@ export default function ResultsPage() {
       getQuizzes(),
       getCurrentUser(),
     ])
-    console.log("resultsData",resultsData)
-    console.log("quizzes",quizzes)
-    console.log("users",users)
+    // console.log("resultsData",resultsData)
+    // console.log("quizzes",quizzes)
+    // console.log("users",users)
 
    const currentUser = users; // your logged-in user
 

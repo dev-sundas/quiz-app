@@ -14,6 +14,7 @@ interface LoginResult {
 
 interface AuthContextType {
   user: User | null
+  setUser: (user: User | null) => void   // <-- add this
   isAuthenticated: boolean
   isLoading: boolean
   login: (username: string, password: string) => Promise<LoginResult>
@@ -117,6 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
+        setUser,  
         isAuthenticated: !!user,
         isLoading,
         login,

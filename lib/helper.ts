@@ -1,6 +1,8 @@
 // lib/mappers.ts
 
 import { ApiQuestion, Question, Quiz } from "./types"
+// utils/date.ts
+import { parseISO } from "date-fns"
 
 export function mapApiQuestion(apiQ: ApiQuestion, index: number): Question {
   const correctIndex = apiQ.options.findIndex((o) => o.is_correct)
@@ -36,8 +38,7 @@ export function formatTime(seconds: number) {
   return `${secs}s`
 }
 
-// utils/date.ts
-import { parseISO } from "date-fns"
+
 
 /**
  * Safely parse a backend date.

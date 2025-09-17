@@ -92,24 +92,7 @@ export default function QuestionManagementPage() {
 
       // 3. Update existing or create new options
       const updatedOptions: Question["options"] = []
-      // for (const optionData of data.options) {
-      //   if (optionData.id) {
-      //     // ✅ Update existing option
-      //     const updatedOption = await updateOption(optionData.id, {
-      //       text: optionData.text,
-      //       is_correct: optionData.is_correct,
-      //     })
-      //     updatedOptions.push(updatedOption)
-      //   } else if (optionData.text.trim() !== "") {
-      //     // ✅ Only create if text is not empty
-      //     const newOption = await createOption({
-      //       question_id: question.id,
-      //       text: optionData.text,
-      //       is_correct: optionData.is_correct,
-      //     })
-      //     updatedOptions.push(newOption)
-      //   }
-      // }
+     
     for (const optionData of data.options) {
       const text = optionData.text?.trim()
       if (!text) continue // skip empty or undefined
@@ -142,20 +125,7 @@ export default function QuestionManagementPage() {
         marks: data.marks,
       })
 
-      // ✅ Create options
-      // const createdOptions: Question["options"] = []
-      // for (const optionData of data.options) {
-      //   if (optionData.text.trim() !== "") {
-      //     const option = await createOption({
-      //       question_id: question.id,
-      //       text: optionData.text,
-      //       is_correct: optionData.is_correct,
-      //     })
-      //     createdOptions.push(option)
-      //   }
-      // }
-
-      // question.options = createdOptions
+      
       const createdOptions: Question["options"] = []
       for (const optionData of data.options) {
         const text = optionData.text?.trim()
