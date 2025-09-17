@@ -235,7 +235,7 @@ export const updateMyProfile = async (user: { username: string; email: string })
 
 // -------------------- ROLES --------------------
 export const getAllRoles = async (): Promise<Role[]> => {
-  const res = await apiCall<Role[] | null>("/role")
+  const res = await apiCall<Role[] | null>("/role/")
   return res ?? []
 }
 
@@ -268,7 +268,7 @@ export const deleteRole = async (id: string): Promise<void> => {
 }
 // -------------------- QUIZ ATTEMPTS --------------------
 export const startQuizAttempt = async (quizId: string): Promise<QuizAttempt> => {
-  const res = await apiCall<QuizAttempt | null>("/quiz_attempt", {
+  const res = await apiCall<QuizAttempt | null>("/quiz_attempt/", {
     method: "POST",
     body: JSON.stringify({ quiz_id: quizId, attempt_number: 1 }),
   })
@@ -345,7 +345,7 @@ export const submitQuizAnswers = async (
   attemptId: string,
   answers: Record<string, string>
 ) => {
-  const res = await apiCall<any | null>("/quiz_answer", {
+  const res = await apiCall<any | null>("/quiz_answer/", {
     method: "POST",
     body: JSON.stringify({ attempt_id: attemptId, answers }),
   })
