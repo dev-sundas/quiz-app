@@ -223,8 +223,8 @@ export interface LoginCredentials {
 }
 
 export interface AuthResponse {
-  access_token: string
-  refresh_token: string
+  // access_token: string
+  // refresh_token: string
   user: User
   success: boolean
   error?: string

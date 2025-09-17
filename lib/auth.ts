@@ -55,8 +55,8 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
     return {
       success: false,
       error: errorData.message || "Invalid credentials",
-      access_token: "",
-      refresh_token: "",
+      // access_token: "",
+      // refresh_token: "",
       user: { id: "", username: "", role: "" }, // still required by type
     }
   }
@@ -64,8 +64,8 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
   const data = await response.json()
   return {
     success: true,
-    access_token: data.access_token || "", // keep type happy
-    refresh_token: data.refresh_token || "", // even if stored in cookie
+    // access_token: data.access_token || "", // keep type happy
+    // refresh_token: data.refresh_token || "", // even if stored in cookie
     user: { id: data.userId, username: credentials.username, role: data.role },
   }
 }
@@ -108,7 +108,7 @@ export const refreshAccessToken = async (): Promise<{ success: boolean; expiresI
       credentials: "include",
     })
     if (!res.ok) return { success: false }
-    const data = await res.json()
+    // const data = await res.json()
     return { success: true, expiresIn: 15 * 60 * 1000 } // assuming 15 min access token
   } catch {
     return { success: false }
