@@ -67,12 +67,6 @@ useEffect(() => {
       setQuiz(studentQuiz)
       setAttempt(existingAttempt)
 
-      if (existingAttempt.deadline) {
-        localStorage.setItem(
-          `quiz_timer_${quizData.id}`,
-          new Date(existingAttempt.deadline).getTime().toString()
-        )
-      }
 
       if (existingAttempt.answers?.length) {
         const savedAnswers: Record<string, string | number> = {}

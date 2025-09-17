@@ -13,46 +13,25 @@ interface QuizTimerProps {
 }
 
 export function QuizTimer({ timeLimit, onTimeUp, isActive, quizId, deadline }: QuizTimerProps) {
-  const storageKey = `quiz_timer_${quizId}`
   const [deadlineMs, setDeadlineMs] = useState<number | null>(null)
   const [timeLeft, setTimeLeft] = useState(0)
 
-  // ✅ Sync with backend deadline (but resilient to nulls + changed deadlines)
+  // ✅ Always trust backend deadline
   useEffect(() => {
-    // console.log("Deadline prop changed:", deadline)
-
-    if (!deadline) {
-      // no new deadline from backend → try restore from localStorage
-      const saved = localStorage.getItem(storageKey)
-      if (saved) {
-        // console.log("Restoring deadline from localStorage:", saved)
-        const savedDeadline = +saved
-        setDeadlineMs(savedDeadline)
-        setTimeLeft(Math.max(Math.floor((savedDeadline - Date.now()) / 1000), 0))
-      }
-      return
-    }
+    if (!deadline) return
 
     const backendDeadline = new Date(deadline).getTime()
-    // console.log("Using backend deadline:", backendDeadline, "Now:", Date.now())
 
     if (backendDeadline <= Date.now()) {
-      // expired → clear and auto-submit
-      localStorage.removeItem(storageKey)
       setDeadlineMs(null)
       setTimeLeft(0)
       onTimeUp()
       return
     }
 
-    // ✅ Only update if backend gave a *different* deadline (new attempt case)
-    if (deadlineMs !== backendDeadline) {
-      // console.log("New deadline detected, resetting timer")
-      localStorage.setItem(storageKey, backendDeadline.toString())
-      setDeadlineMs(backendDeadline)
-      setTimeLeft(Math.floor((backendDeadline - Date.now()) / 1000))
-    }
-  }, [quizId, deadline]) // notice: no onTimeUp here
+    setDeadlineMs(backendDeadline)
+    setTimeLeft(Math.floor((backendDeadline - Date.now()) / 1000))
+  }, [quizId, deadline])
 
   // ✅ Countdown loop
   useEffect(() => {
@@ -63,7 +42,6 @@ export function QuizTimer({ timeLimit, onTimeUp, isActive, quizId, deadline }: Q
 
       if (remaining <= 0) {
         setTimeLeft(0)
-        localStorage.removeItem(storageKey)
         clearInterval(timer)
         onTimeUp()
       } else {
@@ -72,7 +50,7 @@ export function QuizTimer({ timeLimit, onTimeUp, isActive, quizId, deadline }: Q
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [isActive, deadlineMs, onTimeUp, storageKey])
+  }, [isActive, deadlineMs, onTimeUp])
 
   const minutes = Math.floor(timeLeft / 60)
   const seconds = timeLeft % 60
@@ -90,12 +68,3 @@ export function QuizTimer({ timeLimit, onTimeUp, isActive, quizId, deadline }: Q
     </Badge>
   )
 }
-
-
-
-
-
-
-
-
-

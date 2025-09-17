@@ -3,8 +3,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import type { User } from "@/lib/types"
-import {getCurrentUser, getToken, getTokenExpiry, login as loginAPI, logout, refreshAccessToken, setTokens } from "@/lib/auth"
-import {signupUser } from "@/lib/api"
+import { login as loginAPI, logout as logoutAPI, getCurrentUser, refreshAccessToken } from "@/lib/auth"
+import { signupUser } from "@/lib/api"
 
 interface LoginResult {
   success: boolean
@@ -28,46 +28,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
 
-
-  
-  //Load current user on mount
-useEffect(() => {
-  const fetchCurrentUser = async () => {
-    try {
-      const currentUser = await getCurrentUser()
-      if(currentUser){
-         setUser(currentUser)
-      }else{
+  // Load current user on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const currentUser = await getCurrentUser() // reads cookies from browser
+        setUser(currentUser ?? null)
+      } catch (err) {
+        console.warn("No active session found")
         setUser(null)
+      } finally {
+        setIsLoading(false)
       }
-    } catch (err) {
-      console.warn("No active session found")
-      setUser(null)
-    } finally {
-      setIsLoading(false)
     }
-  }
-  fetchCurrentUser()
-}, [])
+    fetchUser()
+  }, [])
 
-useEffect(() => {
+  // Sliding token refresh
+ useEffect(() => {
   let interval: NodeJS.Timeout
 
   const scheduleTokenRefresh = async () => {
-    const token = getToken()
-    if (!token) return
+    const refreshed = await refreshAccessToken()
+    if (!refreshed.success) {
+      await autlogout()
+      return
+    }
 
-    const expiry: number | null = getTokenExpiry(token) // no await
-    if (!expiry) return
-
-    const timeout = expiry - Date.now() - 60_000 // refresh 1 min before expiry
-    if (timeout <= 0) return
-
-    interval = setTimeout(async () => {
-      const refreshed = await refreshAccessToken()
-      if (refreshed) scheduleTokenRefresh()
-      else await autlogout()
-    }, timeout)
+    // Use expiresIn if available, otherwise default 14 minutes
+    const timeout = (refreshed.expiresIn ?? 14 * 60_000) - 60_000
+    interval = setTimeout(scheduleTokenRefresh, timeout)
   }
 
   if (user) scheduleTokenRefresh()
@@ -80,80 +70,63 @@ useEffect(() => {
   const login = async (username: string, password: string): Promise<LoginResult> => {
     setIsLoading(true)
     try {
-      const authResponse = await loginAPI({ username, password })
-      setTokens(authResponse.access_token, authResponse.refresh_token)
-      if (!authResponse.success) {
+      const result = await loginAPI({ username, password }) // cookies set in backend
+      if (!result.success) {
         setIsLoading(false)
-        return { success: false, error: authResponse.error }
-}
+        return { success: false, error: result.error }
+      }
 
       const currentUser = await getCurrentUser()
-      if (!currentUser) {
-        setIsLoading(false)
-        return {success:false,error:"Failed to fetch user"}
-      }
-       
-
-      setUser(currentUser)
+      setUser(currentUser ?? null)
       setIsLoading(false)
-
-      // if (currentUser.role === "admin") router.push("/admin")
-      // else if (currentUser.role === "student") router.push("/student")
-      // else router.push("/login")
-
-      return { success: true, user: currentUser }
+      return { success: true, user: currentUser ?? undefined }
     } catch (err) {
-      console.error(err)
       setIsLoading(false)
       return { success: false, error: err instanceof Error ? err.message : "Login failed" }
     }
   }
 
+  // Logout function
   const autlogout = async (): Promise<void> => {
-    await logout()
+    await logoutAPI()
     setUser(null)
     router.push("/login")
   }
 
-
+  // Signup function
   const signup = async (email: string, password: string, username: string) => {
     setIsLoading(true)
     try {
-      // Call backend endpoint
-      await signupUser({
-        username,
-        email,
-        password,
-      })
-
-      // Auto-login after signup
+      await signupUser({ username, email, password })
       const loginResult = await login(username, password)
       if (loginResult.success && loginResult.user){
-        setUser(loginResult.user)
-        // ✅ Redirect based on role
-        if (loginResult.user!.role === "admin") router.push("/admin")
-        else if (loginResult.user!.role === "student") router.push("/student")
-        else router.push("/login")
+      setUser(loginResult.user)
+      if (loginResult.user!.role === "admin") router.push("/admin")
+      else if (loginResult.user!.role === "student") router.push("/student")
+      else router.push("/login")
     }
+    setIsLoading(false)
+    return { success: true }
+    } catch (err: any) {
       setIsLoading(false)
-      return { success: true }
-      
-    } catch (error: any) {
-      setIsLoading(false)
-      return { success: false, error: error.message || "Signup failed" }
+      return { success: false, error: err.message || "Signup failed" }
     }
   }
 
-  const value = {
-    user,
-    isAuthenticated: !!user,
-    isLoading,
-    login,
-    logout: autlogout,
-    signup,
-  }
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        login,
+        logout: autlogout,
+        signup,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export function useAuth() {
@@ -161,7 +134,3 @@ export function useAuth() {
   if (!context) throw new Error("useAuth must be used within an AuthProvider")
   return context
 }
-// function getTokenExpiry(token: string) {
-//   throw new Error("Function not implemented.")
-// }
-
