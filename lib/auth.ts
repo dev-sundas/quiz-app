@@ -3,7 +3,7 @@
 import { AuthResponse, LoginCredentials, User } from "./types"
 import { useRouter } from "next/navigation"
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ||"https://quizappbackend-production-b111.up.railway.app"
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL||""
 
 
 
