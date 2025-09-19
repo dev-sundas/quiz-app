@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { useAuth } from "@/contexts/auth-context"
 import { User, Mail, Calendar, Shield } from "lucide-react"
 import { updateMyProfile } from "@/lib/api"
+import { ChangePasswordDialog } from "./ChangePasswordDialog"
 
 export function ProfileForm() {
   const { user ,setUser} = useAuth()
@@ -161,17 +162,15 @@ const handleSave = async () => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex flex-col items-start md:flex-row md:items-center justify-between p-4 border rounded-lg">
               <div>
                 <h4 className="font-medium">Password</h4>
                 <p className="text-sm text-muted-foreground">Last changed: Never (Demo account)</p>
               </div>
-              <Button variant="outline" disabled>
-                Change Password
-              </Button>
+                <ChangePasswordDialog />
             </div>
 
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex flex-col items-start md:flex-row md:items-center justify-between p-4 border rounded-lg">
               <div>
                 <h4 className="font-medium">Two-Factor Authentication</h4>
                 <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>

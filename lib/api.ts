@@ -223,7 +223,7 @@ export const signupUser = async (user: {
 }
 
 // Only allow username and email
-export const updateMyProfile = async (user: { username: string; email: string }) => {
+export const updateMyProfile = async (user: { username?: string; email?: string ,password?: string }) => {
   const res = await apiCall<User | null>(`/user/me/update`, {
     method: "PUT",
     body: JSON.stringify(user),
@@ -231,6 +231,7 @@ export const updateMyProfile = async (user: { username: string; email: string })
   if (!res) throw new Error("Failed to update profile")
   return res
 }
+
 
 
 // -------------------- ROLES --------------------

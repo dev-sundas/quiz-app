@@ -69,7 +69,7 @@ export function StudentQuizHistory() {
               <Badge variant="secondary">Attempts {quiz.totalAttempts}</Badge>
             </CardHeader>
 
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 px-3 md:px-6">
               {/* Overall Performance */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">

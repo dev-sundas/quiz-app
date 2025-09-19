@@ -188,9 +188,9 @@ const formattedTime = formatTime(attempt.timeSpent ?? 0)
           })}
         </div>
 
-        <div className="flex items-center justify-center gap-3">
+        <div className="flex flex-col md:flex-row  items-center justify-center gap-3">
            {/* Back to Dashboard */}
-          <Button onClick={() => router.push("/student")} variant="outline">
+          <Button onClick={() => router.push("/student")} variant="outline" className="w-full sm:w-auto">
             <Home className="h-4 w-4 mr-2" />
             Back to Dashboard
           </Button>
@@ -198,6 +198,7 @@ const formattedTime = formatTime(attempt.timeSpent ?? 0)
          <Button
             onClick={() => router.push(`/student/quiz/${quiz.id}`)}
             disabled={!canRetake}
+            className="w-full sm:w-auto"
           >
             <RotateCcw className="h-4 w-4 mr-2" />
             {attemptsMade >= maxAttempts ? "No Attempts Left" : "Retake Quiz"}          

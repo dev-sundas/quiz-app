@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Clock, User, FileText, Trophy, Calendar } from "lucide-react"
 import { formatDistanceToNow, format, parseISO } from "date-fns"
-import { DetailedQuizAttempt } from "@/lib/types"
+import type { DetailedQuizAttempt } from "@/lib/types"
 
 interface ResultsTableProps {
   results: DetailedQuizAttempt[]
@@ -53,7 +53,7 @@ export function ResultsTable({ results, loading }: ResultsTableProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Quiz Results ({results.length})</CardTitle>
+        <CardTitle className="text-base sm:text-lg">Quiz Results ({results.length})</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -62,43 +62,52 @@ export function ResultsTable({ results, loading }: ResultsTableProps) {
               result.percentage || (result.score && result.max_score ? (result.score / result.max_score) * 100 : 0)
 
             return (
-              <div key={result.id} className="border rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <FileText className="h-4 w-4 text-muted-foreground" />
-                      <h3 className="font-semibold">{result.quiz_title || "Unknown Quiz"}</h3>
-                      {getStatusBadge(result)}
+              <div key={result.id} className="border rounded-lg p-3 sm:p-4">
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-3 mb-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                        <h3 className="font-semibold text-sm sm:text-base truncate">
+                          {result.quiz_title || "Unknown Quiz"}
+                        </h3>
+                      </div>
+                      <div className="flex-shrink-0">{getStatusBadge(result)}</div>
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground mb-2">
                       <div className="flex items-center gap-1">
-                        <User className="h-3 w-3" />
-                        <span>{result.student?.username || "Unknown Student"}</span>
+                        <User className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">{result.student?.username || "Unknown Student"}</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>Started {formatDistanceToNow(parseISO(result.started_at + "Z"),{ addSuffix: true })}
+                        <Calendar className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">
+                          Started {formatDistanceToNow(parseISO(result.started_at + "Z"), { addSuffix: true })}
                         </span>
                       </div>
                       {result.completed_at && (
                         <div className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          <span>Completed {format(parseISO(result.completed_at + "Z"), "MMM d, yyyy 'at' h:mm a")}</span>
+                          <Clock className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">
+                            Completed {format(parseISO(result.completed_at + "Z"), "MMM d, yyyy 'at' h:mm a")}
+                          </span>
                         </div>
                       )}
                     </div>
                   </div>
 
                   {result.completed_at && result.score !== undefined && result.max_score && (
-                    <div className="text-right">
-                      <div className="flex items-center gap-2 mb-2">
+                    <div className="flex flex-row lg:flex-col items-center lg:items-end justify-between lg:justify-start gap-2 lg:text-right">
+                      <div className="flex items-center gap-2">
                         <Trophy className="h-4 w-4 text-muted-foreground" />
-                        <span className={`font-bold ${getScoreColor(percentage)}`}>
+                        <span className={`font-bold text-sm sm:text-base ${getScoreColor(percentage)}`}>
                           {result.score}/{result.max_score}
                         </span>
-                        <span className={`text-sm ${getScoreColor(percentage)}`}>({percentage.toFixed(1)}%)</span>
+                        <span className={`text-xs sm:text-sm ${getScoreColor(percentage)}`}>
+                          ({percentage.toFixed(1)}%)
+                        </span>
                       </div>
-                      <Progress value={percentage} className="w-24" />
+                      <Progress value={percentage} className="w-20 sm:w-24" />
                     </div>
                   )}
                 </div>

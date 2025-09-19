@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Search, Filter, X } from "lucide-react"
-import { Quiz, User } from "@/lib/types"
+import type { Quiz, User } from "@/lib/types"
 
 interface ResultsFiltersProps {
   quizzes: Quiz[]
@@ -68,22 +68,24 @@ export function ResultsFilters({ quizzes, users, onFilterChange }: ResultsFilter
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <Filter className="h-5 w-5" />
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Filter className="h-4 w-4 sm:h-5 sm:w-5" />
           Filters & Search
         </CardTitle>
         {hasActiveFilters && (
-          <Button variant="outline" size="sm" onClick={clearFilters}>
+          <Button variant="outline" size="sm" onClick={clearFilters} className="w-full sm:w-auto bg-transparent">
             <X className="h-4 w-4 mr-2" />
             Clear All
           </Button>
         )}
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-          <div className="space-y-2">
-            <Label htmlFor="search">Search</Label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-4">
+          <div className="space-y-2 sm:col-span-2 lg:col-span-1 xl:col-span-2">
+            <Label htmlFor="search" className="text-sm">
+              Search
+            </Label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -91,15 +93,17 @@ export function ResultsFilters({ quizzes, users, onFilterChange }: ResultsFilter
                 placeholder="Search by username or quiz..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
+                className="pl-10 text-sm"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="quiz">Quiz</Label>
+            <Label htmlFor="quiz" className="text-sm">
+              Quiz
+            </Label>
             <Select value={quizId} onValueChange={setQuizId}>
-              <SelectTrigger>
+              <SelectTrigger className="text-sm">
                 <SelectValue placeholder="All quizzes" />
               </SelectTrigger>
               <SelectContent>
@@ -114,9 +118,11 @@ export function ResultsFilters({ quizzes, users, onFilterChange }: ResultsFilter
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="user">Student</Label>
+            <Label htmlFor="user" className="text-sm">
+              Student
+            </Label>
             <Select value={userId} onValueChange={setUserId}>
-              <SelectTrigger>
+              <SelectTrigger className="text-sm">
                 <SelectValue placeholder="All students" />
               </SelectTrigger>
               <SelectContent>
@@ -127,15 +133,17 @@ export function ResultsFilters({ quizzes, users, onFilterChange }: ResultsFilter
                     <SelectItem key={user.id} value={user.id.toString()}>
                       {user.username}
                     </SelectItem>
-                    ))}
+                  ))}
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="status">Status</Label>
+            <Label htmlFor="status" className="text-sm">
+              Status
+            </Label>
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger>
+              <SelectTrigger className="text-sm">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
               <SelectContent>
@@ -147,9 +155,11 @@ export function ResultsFilters({ quizzes, users, onFilterChange }: ResultsFilter
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sortBy">Sort By</Label>
+            <Label htmlFor="sortBy" className="text-sm">
+              Sort By
+            </Label>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger>
+              <SelectTrigger className="text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -164,9 +174,11 @@ export function ResultsFilters({ quizzes, users, onFilterChange }: ResultsFilter
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sortOrder">Sort Order</Label>
+            <Label htmlFor="sortOrder" className="text-sm">
+              Sort Order
+            </Label>
             <Select value={sortOrder} onValueChange={setSortOrder}>
-              <SelectTrigger>
+              <SelectTrigger className="text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -177,7 +189,7 @@ export function ResultsFilters({ quizzes, users, onFilterChange }: ResultsFilter
           </div>
         </div>
 
-        <Button onClick={handleFilterChange} className="w-full md:w-auto">
+        <Button onClick={handleFilterChange} className="w-full sm:w-auto">
           Apply Filters
         </Button>
       </CardContent>

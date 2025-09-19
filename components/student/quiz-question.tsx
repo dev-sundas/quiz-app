@@ -68,7 +68,7 @@ export function QuizQuestion({
           <CardTitle className="text-lg">
             Question {questionNumber} of {totalQuestions}
           </CardTitle>
-          <div className="flex items-center space-x-2">
+          <div className="flex flex-col md:flex-row items-center space-x-2">
             <span className="text-sm text-muted-foreground">{question.marks} points</span>
             {isCorrect !== undefined && (
               <div

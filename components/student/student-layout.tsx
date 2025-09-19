@@ -18,7 +18,7 @@ export function StudentLayout({ children }: StudentLayoutProps) {
         <div>
           <Navbar />
         </div>
-        <main className="container mx-auto px-6 py-8">{children}</main>
+        <main className="container mx-auto px-2 md:px-6 py-8">{children}</main>
       </div>
       </AuthProvider>
     </ProtectedRoute>

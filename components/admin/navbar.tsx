@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { LogOut, User, LayoutDashboard, Trophy, Settings, Users, UserIcon } from "lucide-react"
+import { LogOut, LayoutDashboard, Trophy, Settings, Users, UserIcon, Menu, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/contexts/auth-context"
 import {
@@ -15,11 +15,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { isAdmin } from "@/lib/auth"
+import { useState } from "react"
 
 export function Navbar() {
   const { user, logout } = useAuth()
   const pathname = usePathname()
   const router = useRouter()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleLogout = async () => {
     await logout()
@@ -27,6 +29,10 @@ export function Navbar() {
 
   const handleProfileClick = async () => {
     router.push("/profile")
+  }
+
+  const handleNavClick = () => {
+    setIsMobileMenuOpen(false)
   }
 
   const studentNavItems = [
@@ -75,20 +81,20 @@ export function Navbar() {
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-8">
+          <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
             <Link href={isAdmin(user) ? "/admin" : "/student"} className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-md">Q</span>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground font-bold text-sm sm:text-md">Q</span>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">Quiz Portal</h1>
-                <p className="text-sm text-muted-foreground">Test your knowledge</p>
+              <div className="hidden xs:block sm:block">
+                <h1 className="text-lg sm:text-xl font-bold text-foreground">Quiz Portal</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">Test your knowledge</p>
               </div>
             </Link>
 
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-1">
               {navItems.map((item) => {
                 const Icon = item.icon
                 return (
@@ -99,7 +105,7 @@ export function Navbar() {
                       className={cn("flex items-center gap-2", item.active && "bg-secondary")}
                     >
                       <Icon className="h-4 w-4" />
-                      {item.label}
+                      <span>{item.label}</span>
                     </Button>
                   </Link>
                 )
@@ -107,17 +113,26 @@ export function Navbar() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="lg:hidden"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-sm font-medium text-primary-foreground">
+                <Button variant="ghost" className="flex items-center space-x-1 sm:space-x-2 p-1 sm:p-2">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-xs sm:text-sm font-medium text-primary-foreground">
                       {user?.username?.charAt(0).toUpperCase() ?? "?"}
                     </span>
                   </div>
-                  <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-                    <span>{user?.username}</span>
+                  <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
+                    <span className="max-w-24 lg:max-w-none truncate">{user?.username}</span>
                     <span className="text-xs bg-secondary px-2 py-1 rounded-full">{user?.role}</span>
                   </div>
                 </Button>
@@ -139,24 +154,30 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile navigation */}
-        <nav className="md:hidden flex items-center gap-1 mt-4 pt-4 border-t">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link key={item.href} href={item.href} className="flex-1">
-                <Button
-                  variant={item.active ? "secondary" : "ghost"}
-                  size="sm"
-                  className={cn("w-full flex items-center gap-2", item.active && "bg-secondary")}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              </Link>
-            )
-          })}
-        </nav>
+        {isMobileMenuOpen && (
+          <nav className="lg:hidden mt-3 sm:mt-4 pt-3 sm:pt-4 border-t">
+            <div className="flex flex-col gap-1">
+              {navItems.map((item) => {
+                const Icon = item.icon
+                return (
+                  <Link key={item.href} href={item.href} onClick={handleNavClick}>
+                    <Button
+                      variant={item.active ? "secondary" : "ghost"}
+                      size="sm"
+                      className={cn(
+                        "w-full flex items-center justify-start gap-3 py-3 text-sm",
+                        item.active && "bg-secondary",
+                      )}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </Button>
+                  </Link>
+                )
+              })}
+            </div>
+          </nav>
+        )}
       </div>
     </header>
   )
