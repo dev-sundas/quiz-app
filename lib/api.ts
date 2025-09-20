@@ -1,5 +1,5 @@
 // api.ts
-import { apiCall } from "./auth"
+import { API_BASE_URL, apiCall } from "./auth"
 import { mapApiQuestion } from "./helper"
 import {
   AdminStats,
@@ -57,6 +57,8 @@ export const updateQuiz = async (
 export const deleteQuiz = async (id: string): Promise<void> => {
   await apiCall(`/quiz/Delete/${id}`, { method: "DELETE" })
 }
+
+
 export const importQuiz = async (
   file: File
 ): Promise<{ message: string; quiz: Quiz }> => {
@@ -75,6 +77,24 @@ export const importQuiz = async (
   return res
 }
 
+
+export const exportQuizTemplate = async (): Promise<void> => {
+  const res = await fetch(`${API_BASE_URL}/quiz/export-quiz-template`, {
+    method: "GET",
+    credentials: "include", // keep auth/session cookies
+  })
+
+  if (!res.ok) throw new Error("Failed to export template")
+
+  const blob = await res.blob()
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = "quiz_template.xlsx"
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
 
 
 
