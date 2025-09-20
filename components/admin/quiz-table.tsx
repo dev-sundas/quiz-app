@@ -16,11 +16,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Edit, Trash2, Plus, Clock } from "lucide-react"
+import { Edit, Trash2, Plus, Clock, FileDown } from "lucide-react"
 import Link from "next/link"
 import { formatDistanceToNow, parseISO } from "date-fns"
 import type { Quiz } from "@/lib/types"
-import { importQuiz, updateQuiz } from "@/lib/api"
+import { exportQuizTemplate, importQuiz, updateQuiz } from "@/lib/api"
 import { Switch } from "../ui/switch"
 import { Input } from "../ui/input"
 
@@ -83,6 +83,13 @@ export function QuizTable({ quizzes: initialQuizzes, onDelete, isDeleting }: Qui
 
             {/* Hidden shadcn input */}
             <Input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleImportQuiz} />
+            <Button
+            className="flex items-center justify-center gap-2 w-full sm:w-auto"
+            onClick={exportQuizTemplate}
+          >
+            <FileDown className="h-4 w-4" />
+            Export Template
+          </Button>
           </div>
         </CardHeader>
         <CardContent>
